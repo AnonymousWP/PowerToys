@@ -13,10 +13,12 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [x64, ARM64]
+        platform: [x64]  # Only build x64 for now
         configuration: [Release]
+      fail-fast: false  # Don't cancel other jobs if one fails
     
     runs-on: windows-2022
+    timeout-minutes: 90  # Set 90-minute timeout
     
     steps:
       - name: Checkout code
@@ -54,7 +56,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          .\tools\build\build.ps1 -Configuration ${{ matrix.configuration }} -Platform ${{ matrix.platform }}
+          # Build with minimal verbosity and maximum parallelism
+          .\tools\build\build.ps1 -Configuration ${{ matrix.configuration }} -Platform ${{ matrix.platform }} '/m' '/v:minimal'
           if ($LASTEXITCODE -ne 0) {
             Write-Error "Build failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE

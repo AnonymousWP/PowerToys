@@ -53,14 +53,12 @@ jobs:
       - name: Restore NuGet packages
         shell: pwsh
         run: |
-          cd "${{ github.workspace }}"
-          .\tools\build\build-essentials.ps1
+          nuget restore PowerToys.sln
       
       - name: Build PowerToys
         shell: pwsh
         run: |
-          cd "${{ github.workspace }}"
-          .\tools\build\build.ps1 -Configuration ${{ matrix.configuration }} -Platform ${{ matrix.platform }}
+          msbuild PowerToys.sln /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ matrix.platform }} /m /v:minimal
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
